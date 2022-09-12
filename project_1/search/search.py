@@ -1,15 +1,15 @@
 # search.py
 # ---------
-# Licensing Information:  You are free to use or extend these projects for 
-# educational purposes provided that (1) you do not distribute or publish 
-# solutions, (2) you retain this notice, and (3) you provide clear 
-# attribution to UC Berkeley, including a link to 
+# Licensing Information:  You are free to use or extend these projects for
+# educational purposes provided that (1) you do not distribute or publish
+# solutions, (2) you retain this notice, and (3) you provide clear
+# attribution to UC Berkeley, including a link to
 # http://inst.eecs.berkeley.edu/~cs188/pacman/pacman.html
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
-# The core projects and autograders were primarily created by John DeNero 
+# The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
-# Student side autograding was added by Brad Miller, Nick Hay, and 
+# Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 
@@ -90,24 +90,83 @@ def depthFirstSearch(problem):
     print("Is the start a goal?", problem.isGoalState(problem.getStartState()))
     print("Start's successors:", problem.getSuccessors(problem.getStartState()))
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    stack = util.Stack()
+    stack.push((
+        problem.getStartState(),
+        []
+    ))
 
+    seen = []
+    while stack:
+        curr = stack.pop()
+        seen.append(curr[0])
+
+        if problem.isGoalState(curr[0]):
+            return curr[1]
+
+        for successor in problem.getSuccessors(curr[0]):
+            if successor[0] not in seen:
+                stack.push((
+                    successor[0],
+                    curr[1] + [successor[1]]
+                ))
 
 def breadthFirstSearch(problem):
     """
     Search the shallowest nodes in the search tree first.
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    queue = util.Queue()
+    queue.push((
+        problem.getStartState(),
+        []
+    ))
+
+    seen = []
+    while queue:
+        curr = queue.pop()
+
+        if problem.isGoalState(curr[0]):
+            return curr[1]
+
+        if curr[0] not in seen:
+            seen.append(curr[0])
+            for successor in problem.getSuccessors(curr[0]):
+                queue.push((
+                    successor[0],
+                    curr[1] + [successor[1]]
+                ))
 
 
 def uniformCostSearch(problem):
     """
     Search the node of least total cost first.
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    queue = util.PriorityQueue()
+    queue.push(
+        (
+            problem.getStartState(),
+            []
+        ),
+        0
+    )
+
+    seen = []
+    while queue:
+        curr = queue.pop()
+
+        if problem.isGoalState(curr[0]):
+            return curr[1]
+
+        if curr[0] not in seen:
+            seen.append(curr[0])
+            for successor in problem.getSuccessors(curr[0]):
+                queue.push(
+                    (
+                        successor[0],
+                        curr[1] + [successor[1]]
+                    ),
+                    problem.getCostOfActions(curr[1] + [successor[1]])
+                )
 
 
 def nullHeuristic(state, problem=None):
@@ -122,9 +181,40 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     """
     Search the node that has the lowest combined cost and heuristic first.
     """
-    "*** YOUR CODE HERE ***"
-    util.raiseNotDefined()
+    queue = util.PriorityQueue()
+    queue.push(
+        (
+            problem.getStartState(),
+            []
+        ),
+        heuristic(
+            problem.getStartState(),
+            problem
+        )
+    )
 
+    seen = []
+    while queue:
+        curr = queue.pop()
+        
+        if problem.isGoalState(curr[0]):
+            return curr[1]
+
+        if curr[0] not in seen:
+            seen.append(curr[0])
+            for successor in problem.getSuccessors(curr[0]):
+                queue.push(
+                    (
+                        successor[0],
+                        curr[1] + [successor[1]]
+                    ),
+                    problem.getCostOfActions(
+                        curr[1] + [successor[1]]
+                    ) + heuristic(
+                        successor[0],
+                        problem
+                    )
+                )
 
 # Abbreviations
 bfs = breadthFirstSearch

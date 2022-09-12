@@ -1,15 +1,15 @@
 # searchAgents.py
 # ---------------
-# Licensing Information:  You are free to use or extend these projects for 
-# educational purposes provided that (1) you do not distribute or publish 
-# solutions, (2) you retain this notice, and (3) you provide clear 
-# attribution to UC Berkeley, including a link to 
+# Licensing Information:  You are free to use or extend these projects for
+# educational purposes provided that (1) you do not distribute or publish
+# solutions, (2) you retain this notice, and (3) you provide clear
+# attribution to UC Berkeley, including a link to
 # http://inst.eecs.berkeley.edu/~cs188/pacman/pacman.html
-# 
+#
 # Attribution Information: The Pacman AI projects were developed at UC Berkeley.
-# The core projects and autograders were primarily created by John DeNero 
+# The core projects and autograders were primarily created by John DeNero
 # (denero@cs.berkeley.edu) and Dan Klein (klein@cs.berkeley.edu).
-# Student side autograding was added by Brad Miller, Nick Hay, and 
+# Student side autograding was added by Brad Miller, Nick Hay, and
 # Pieter Abbeel (pabbeel@cs.berkeley.edu).
 
 
@@ -310,17 +310,17 @@ class CornersProblem(search.SearchProblem):
         self._expanded = 0  # Number of search nodes expanded
         # Please add any code here which you would like to use
         # in initializing the problem
-        "*** YOUR CODE HERE ***"
 
     def getStartState(self):
         "Returns the start state (in your state space, not the full Pacman state space)"
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return (
+            self.startingPosition,
+            []
+        )
 
     def isGoalState(self, state):
         "Returns whether this search state is a goal state of the problem"
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return 0 if len(state[1]) < 4 else 1
 
     def getSuccessors(self, state):
         """
@@ -343,7 +343,22 @@ class CornersProblem(search.SearchProblem):
             #   nextx, nexty = int(x + dx), int(y + dy)
             #   hitsWall = self.walls[nextx][nexty]
 
-            "*** YOUR CODE HERE ***"
+            x, y = state[0]
+            dx, dy = Actions.directionToVector(action)
+            nextx, nexty = int(x + dx), int(y + dy)
+
+            if not self.walls[nextx][nexty]:
+                successors.append((
+                    (
+                        (nextx, nexty),
+                        state[1] + [(nextx, nexty)]
+                        if (nextx, nexty) in self.corners
+                        and (nextx, nexty) not in state[1]
+                        else state[1]
+                    ),
+                    action,
+                    1
+                ))
 
         self._expanded += 1
         return successors
@@ -389,8 +404,24 @@ def cornersHeuristic(state, problem):
     corners = problem.corners  # These are the corner coordinates
     walls = problem.walls  # These are the walls of the maze, as a Grid (game.py)
 
-    "*** YOUR CODE HERE ***"
-    return 0  # Default to trivial solution
+    unseen = [x for x in corners if x not in state[1]]
+    output = 0
+    curr = state[0]
+    corner = []
+
+    while unseen:
+        min = 16535
+
+        for x in unseen:
+            if min > util.manhattanDistance(curr, x):
+                min = util.manhattanDistance(curr, x)
+                corner = x
+
+        unseen.remove(corner)
+        curr = corner
+        output += min
+
+    return output
 
 
 class AStarCornersAgent(SearchAgent):
@@ -503,8 +534,22 @@ def foodHeuristic(state, problem):
     Submissions with mazeDistance will receive a 0 for this question.
     """
     position, foodGrid = state
-    "*** YOUR CODE HERE ***"
-    return 0
+
+    foods = []
+    for x in range(foodGrid.width):
+        for y in range(foodGrid.height):
+            if (foodGrid[x][y]):
+                foods += [(x,y)]
+
+    output = 0
+    if not foods:
+        return output
+
+    for food in foods:
+        if mazeDistance(position, food, problem.startingGameState) > output:
+            output = mazeDistance(position, food, problem.startingGameState)
+
+    return output
 
 
 class ClosestDotSearchAgent(SearchAgent):
@@ -537,8 +582,7 @@ class ClosestDotSearchAgent(SearchAgent):
         walls = gameState.getWalls()
         problem = AnyFoodSearchProblem(gameState)
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return search.uniformCostSearch(problem)
 
 
 class AnyFoodSearchProblem(PositionSearchProblem):
@@ -574,8 +618,7 @@ class AnyFoodSearchProblem(PositionSearchProblem):
         """
         x, y = state
 
-        "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+        return 1 if self.food[x][y] else 0
 
 
 ##################
