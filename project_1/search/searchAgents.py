@@ -535,21 +535,40 @@ def foodHeuristic(state, problem):
     """
     position, foodGrid = state
 
-    foods = []
+    curr = None
     for x in range(foodGrid.width):
         for y in range(foodGrid.height):
-            if (foodGrid[x][y]):
-                foods += [(x,y)]
+            if foodGrid[x][y]:
+                dist = util.manhattanDistance(
+                    position,
+                    (x, y)
+                )
+                curr = (
+                    x,
+                    y,
+                    dist
+                ) if not curr or dist < curr[2] else curr
 
-    output = 0
-    if not foods:
-        return output
+    if curr is None:
+        return 0
 
-    for food in foods:
-        if mazeDistance(position, food, problem.startingGameState) > output:
-            output = mazeDistance(position, food, problem.startingGameState)
+    position = (curr[0], curr[1])
+    output = curr[2]
+    curr = None
+    for x in range(foodGrid.width):
+        for y in range(foodGrid.height):
+            if foodGrid[x][y]:
+                dist = util.manhattanDistance(
+                    position,
+                    (x, y)
+                )
+                curr = (
+                    x,
+                    y,
+                    dist
+                ) if not curr or dist > curr[2] else curr
 
-    return output
+    return output + curr[2] if curr is not None else 0
 
 
 class ClosestDotSearchAgent(SearchAgent):
