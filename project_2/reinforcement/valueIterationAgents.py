@@ -106,8 +106,8 @@ class ValueIterationAgent(ValueEstimationAgent):
         currMax = float("-inf")
         for action in self.mdp.getPossibleActions(state):
             if self.computeQValueFromValues(state, action) > currMax:
-                currMax = self.computeQValueFromValues(state, action)
                 output = action
+                currMax = self.computeQValueFromValues(state, action)
 
         return output
 

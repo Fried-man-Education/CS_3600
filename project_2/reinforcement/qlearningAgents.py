@@ -95,7 +95,7 @@ class QLearningAgent(ReinforcementAgent):
         # Pick Action
         legalActions = self.getLegalActions(state)
 
-        if not len(legalActions):
+        if not legalActions:
             return None
 
         return random.choice(legalActions) if util.flipCoin(self.epsilon) else self.computeActionFromQValues(state)
@@ -177,7 +177,7 @@ class ApproximateQAgent(PacmanQAgent):
         features = self.featExtractor.getFeatures(state, action)
         weights = self.getWeights()
 
-        return sum([weights[feature] * features[feature] for feature in features])
+        return sum([weights[i] * features[i] for i in features])
 
     def update(self, state, action, nextState, reward):
         """
@@ -188,7 +188,7 @@ class ApproximateQAgent(PacmanQAgent):
         temp = reward - self.getQValue(state, action) + self.discount \
             * self.getValue(nextState)
         for i in features:
-            self.weights[i] += self.alpha * temp * features[i]
+            self.weights[i] += features[i] * self.alpha * temp
 
     def final(self, state):
         "Called at the end of each game."
