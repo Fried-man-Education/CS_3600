@@ -321,15 +321,14 @@ class ExactInference(InferenceModule):
         that the ghost is at position p at time t + 1, given that the ghost is at position oldPos at time t
 
         """
-        "*** YOUR CODE HERE ***"
+        output = util.Counter()
+        for postion in self.allPositions:
+            distribution = self.getPositionDistribution(gameState, postion)
+            for distPosition in distribution:
+                output[distPosition] += distribution[distPosition] * self.beliefs[postion]
 
-
-
-
+        self.beliefs = output
         self.beliefs.normalize()
-
-
-        raiseNotDefined()
 
     def getBeliefDistribution(self):
         return self.beliefs
