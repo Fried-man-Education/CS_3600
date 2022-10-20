@@ -292,11 +292,15 @@ class ExactInference(InferenceModule):
         current position. However, this is not a problem, as Pacman's current
         position is known.
         """
-        "*** YOUR CODE HERE ***"
-
+        for postion in self.legalPositions:
+            self.beliefs[postion] = self.getObservationProb(
+                observation,
+                gameState.getPacmanPosition(),
+                postion,
+                self.getJailPosition()
+            ) * self.beliefs[postion]
 
         self.beliefs.normalize()
-        raiseNotDefined()
 
     def elapseTime(self, gameState):
         """
@@ -412,7 +416,7 @@ class ParticleFilter(InferenceModule):
         Return the agent's current belief state, a distribution over ghost
         locations conditioned on all evidence and time passage. This method
         essentially converts a list of particles into a belief distribution.
-        
+
         This function should return a normalized distribution.
         """
         "*** YOUR CODE HERE ***"
