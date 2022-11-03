@@ -459,10 +459,25 @@ class JointParticleFilter(ParticleFilter):
         should be evenly distributed across positions in order to ensure a
         uniform prior.
         """
-        self.particles = []
-        "*** YOUR CODE HERE ***"
+        positions = [
+            position for position in
+            random.sample(
+                list(
+                    itertools.product(
+                        self.legalPositions,
+                        repeat=self.numGhosts)
+                    ),
+                    len(list(itertools.product(
+                        self.legalPositions,
+                        repeat=self.numGhosts
+                    )))
+                )
+        ]
+        self.particles = [
+            positions[particle % len(positions)]
+            for particle in range(self.numParticles)
+        ]
 
-        raiseNotDefined()
 
     def addGhostAgent(self, agent):
         """
@@ -504,13 +519,27 @@ class JointParticleFilter(ParticleFilter):
         The sample method of the DiscreteDistribution class will also be useful.
 
         """
-        "*** YOUR CODE HERE ***"
+        beliefs = util.Counter()
+        for particle in self.particles:
+            probability = 1
+            for i in range(0, self.numGhosts):
+                probability *= self.getObservationProb(
+                    observation[i],
+                    gameState.getPacmanPosition(),
+                    particle[i],
+                    self.getJailPosition(i)
+                )
+            beliefs[particle] += probability
+        beliefs.normalize()
 
+        if not DiscreteDistribution(beliefs).total():
+            self.initializeUniformly(gameState)
+            return
 
-
-
-
-        raiseNotDefined()
+        self.particles = [
+            DiscreteDistribution(beliefs).sample()
+            for particle in range(self.numParticles)
+        ]
 
     def elapseTime(self, gameState):
         """
