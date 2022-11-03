@@ -560,14 +560,16 @@ class JointParticleFilter(ParticleFilter):
             newParticle = list(oldParticle)  # A list of ghost positions
 
             # now loop through and update each entry in newParticle...
-            "*** YOUR CODE HERE ***"
-            raiseNotDefined()
+            for i in range(0, self.numGhosts):
+                newParticle[i] = DiscreteDistribution(
+                    self.getPositionDistribution(
+                        gameState, 
+                        newParticle,
+                        i,
+                        self.ghostAgents[i]
+                    )
+                ).sample()
 
-
-
-
-
-            """*** END YOUR CODE HERE ***"""
             newParticles.append(tuple(newParticle))
         self.particles = newParticles
 
