@@ -67,7 +67,7 @@ class Perceptron(object):
             The output of the derivative of a sigmoid function
             parametrized by the value.
         """
-        """YOUR CODE"""
+        return self.sigmoid(value) * (1 - self.sigmoid(value))
 
     def sigmoidActivationDeriv(self, inActs):
         """
@@ -81,7 +81,7 @@ class Perceptron(object):
             int
             The derivative of the sigmoid of the weighted input
         """
-        """YOUR CODE"""
+        return self.sigmoidDeriv(self.getWeightedSum([1.0] + inActs))
 
     def updateWeights(self, inActs, alpha, delta):
         """
@@ -99,7 +99,13 @@ class Perceptron(object):
             Return the total modification of all the weights (sum of each abs(modification))
         """
         totalModification = 0
-        """YOUR CODE"""
+
+        inActs = [1.0] + inActs
+
+        for i in range(len(self.weights)):
+            self.weights[i] += inActs[i] * alpha * delta
+            totalModification += inActs[i] * alpha * delta
+
         return totalModification
 
     def setRandomWeights(self):
