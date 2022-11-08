@@ -40,7 +40,7 @@ class Perceptron(object):
             The output of the sigmoid function parametrized by
             the value.
         """
-        """YOUR CODE"""
+        return 1.0 / (1 + exp(-value))
 
     def sigmoidActivation(self, inActs):
         """
@@ -54,7 +54,7 @@ class Perceptron(object):
             float
             The value of the sigmoid of the weighted input
         """
-        """YOUR CODE"""
+        return self.sigmoid(self.getWeightedSum([1.0] + inActs))
 
     def sigmoidDeriv(self, value):
         """
@@ -172,7 +172,12 @@ class NeuralNet(object):
             A list of lists. The first list is the input list, and the others are
             lists of the output values of all perceptrons in each layer.
         """
-        """YOUR CODE"""
+        output = [inActs]
+        for layer in self.layers:
+            sigActs = [percep.sigmoidActivation(inActs) for percep in layer]
+            output.append(sigActs)
+            inActs = sigActs
+        return output
 
     def backPropLearning(self, examples, alpha):
         """
@@ -313,5 +318,3 @@ def buildNeuralNet(examples, alpha=0.1, weightChangeThreshold = 0.00008,hiddenLa
     print('Feed Forward Test correctly classified %d, incorrectly classified %d, test accuracy %f\n'%(testCorrect,testError,testAccuracy))
 
     """return something"""
-
-
