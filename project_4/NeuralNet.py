@@ -299,17 +299,15 @@ def buildNeuralNet(examples, alpha=0.1, weightChangeThreshold = 0.00008,hiddenLa
     """
     YOUR CODE
     """
-    iteration=0
-    trainError=0
-    weightMod=0
 
+    iteration, trainError, weightMod = 0, 0, 0
     """
     Iterate for as long as it takes to reach weight modification threshold
     """
-        #if iteration%10==0:
-        #    print '! on iteration %d; training error %f and weight change %f'%(iteration,trainError,weightMod)
-        #else :
-        #    print '.',
+    weight = float('inf')
+    while weight > weightChangeThreshold and iteration < maxItr:
+        trainError, weight = nnet.backPropLearning(examplesTrain, alpha)
+        iteration += 1
 
 
     time = datetime.now().time()
@@ -321,11 +319,17 @@ def buildNeuralNet(examples, alpha=0.1, weightChangeThreshold = 0.00008,hiddenLa
     If the entire rounded list from the NN matches with the known list from the test example, then add to testCorrect, else add to  testError.
     """
 
-    testError = 0
-    testCorrect = 0
+    testError, testCorrect = 0, 0
 
-    testAccuracy=0#num correct/num total
+    for input, list in examplesTest:
+        if [round(x) for x in nnet.feedForward(input)[-1]] == list:
+            testCorrect += 1
+            continue
+
+        testError += 1
+
+    testAccuracy = testCorrect / len(examplesTest)
 
     print('Feed Forward Test correctly classified %d, incorrectly classified %d, test accuracy %f\n'%(testCorrect,testError,testAccuracy))
 
-    """return something"""
+    return nnet, testAccuracy
